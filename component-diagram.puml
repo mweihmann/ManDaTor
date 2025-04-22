@@ -1,0 +1,37 @@
+@startuml
+
+component "JavaFX GUI\n(JavaFX)" as GUI
+
+component "REST API\n(Spring Boot)" as RESTAPI
+
+database "PostgreSQL" as DB
+
+component "Current Percentage Service\n(Python Flask)" as Percent
+component "Usage Service\n(Python Flask)" as Usage
+
+queue "RabbitMQ" as MQ
+
+component "Energy Producer\n(Python Flask)" as Producer
+component "Energy User\n(Python Flask)" as User
+
+' GUI <-> REST API
+GUI --> RESTAPI : GET /energy/current
+GUI --> RESTAPI : GET /energy/historical?start=...&end=...
+
+' REST API -> DB
+RESTAPI --> DB : read usage & percentage tables
+
+' RabbitMQ empfängt Producer/User-Nachrichten
+Producer --> MQ : PRODUCER message
+User --> MQ : USER message
+
+' Usage Service verarbeitet Nachrichten aus der Queue
+MQ --> Usage : producer/user message
+Usage --> DB : update usage table
+Usage --> MQ : send update message
+
+' Current Percentage Service reagiert auf Update
+MQ --> Percent : update message
+Percent --> DB : update percentage table
+
+@enduml

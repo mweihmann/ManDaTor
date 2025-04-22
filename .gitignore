@@ -1,0 +1,46 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pyc
+*.p~*
+
+# Flask / Env
+.env
+*.env
+
+# VSCode
+.vscode/
+
+# Docker
+# *.log
+# *.pid
+# *.seed
+# *.dbml
+# docker-compose.override.yml
+
+# Pip
+pip-log.txt
+pip-delete-this-directory.txt
+*.venv/
+.venv/
+venv/
+ENV/
+env/
+
+# macOS
+.DS_Store
+
+# Pytest
+.cache/
+.pytest_cache/
+
+# Coverage reports
+htmlcov/
+coverage.xml
+*.cover
+*.py,cover
+.cache
+nosetests.xml
+*.db

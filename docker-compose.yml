@@ -1,0 +1,58 @@
+services:
+  database:
+    image: postgres:alpine
+    ports:
+      - '5432:5432'
+    environment:
+      - POSTGRES_USER=disysuser
+      - POSTGRES_PASSWORD=disyspw
+    volumes:
+      - ./database:/docker-entrypoint-initdb.d
+  
+  rabbitmq:
+    image: rabbitmq:management-alpine
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+
+  producer:
+    build: ./producer
+    ports:
+      - "5001:5001"
+    depends_on:
+      - rabbitmq
+
+  user:
+    build: ./user
+    ports:
+      - "5002:5002"
+    depends_on:
+      - rabbitmq    
+
+  usage-service:
+    build:
+      context: ./usage-service
+      dockerfile: Dockerfile
+    env_file:
+      - .env  
+    volumes:
+      - ./database/util:/app/database/util
+    depends_on:
+      - database
+      - rabbitmq
+    ports:
+      - "5003:5003"
+
+  percentage-service:
+    build:
+      context: ./percentage-service
+      dockerfile: Dockerfile
+    env_file:
+      - .env  
+    volumes:
+      - ./database/util:/app/database/util
+    depends_on:
+      - database
+      - rabbitmq
+    ports:
+      - "5004:5004"

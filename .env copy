@@ -1,0 +1,5 @@
+DB_HOST=database
+DB_NAME=mandator_energy_db
+DB_USER=disysuser
+DB_PASSWORD=disyspw
+DB_PORT=5432
