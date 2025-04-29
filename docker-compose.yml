@@ -15,19 +15,82 @@ services:
       - '5672:5672'
       - '15672:15672'
 
-  producer:
+  # Use multiple producers
+  # SOLAR_MULTIPLIER is used to simulate different solar production rates
+  # environment port is for flask to know what it should use for each service
+  producer1:
     build: ./producer
+    environment:
+      - PORT=5001
+      - SOLAR_MULTIPLIER=1.1
     ports:
       - "5001:5001"
     depends_on:
       - rabbitmq
+    volumes:
+      - ./util:/app/util  
 
-  user:
-    build: ./user
+  producer2:
+    build: ./producer
+    environment:
+      - PORT=5002
+      - SOLAR_MULTIPLIER=1.2
     ports:
       - "5002:5002"
     depends_on:
-      - rabbitmq    
+      - rabbitmq
+    volumes:
+      - ./util:/app/util      
+
+  producer3:
+    build: ./producer
+    environment:
+      - PORT=5003
+      - SOLAR_MULTIPLIER=1.0 
+    ports:
+      - "5003:5003"
+    depends_on:
+      - rabbitmq
+    volumes:
+      - ./util:/app/util        
+
+  # Use multiple users
+  user1:
+    build: ./user
+    environment:
+      - PORT=5004
+      - SOLAR_MULTIPLIER=1.1 
+    ports:
+      - "5004:5004"
+    depends_on:
+      - rabbitmq
+    volumes:
+      - ./util:/app/util
+
+  user2:
+    build: ./user
+    environment:
+      - PORT=5005
+      - SOLAR_MULTIPLIER=1.3 
+    ports:
+      - "5005:5005"
+    depends_on:
+      - rabbitmq
+    volumes:
+      - ./util:/app/util     
+
+  user3:
+    build: ./user
+    environment:
+      - PORT=5006
+      - SOLAR_MULTIPLIER=1.0 
+    ports:
+      - "5006:5006"
+    depends_on:
+      - rabbitmq
+    volumes:
+      - ./util:/app/util    
+
 
   usage-service:
     build:
@@ -36,12 +99,12 @@ services:
     env_file:
       - .env  
     volumes:
-      - ./database/util:/app/database/util
+      - ./util:/app/util
     depends_on:
       - database
       - rabbitmq
     ports:
-      - "5003:5003"
+      - "5007:5007"
 
   percentage-service:
     build:
@@ -50,9 +113,9 @@ services:
     env_file:
       - .env  
     volumes:
-      - ./database/util:/app/database/util
+      - ./util:/app/util
     depends_on:
       - database
       - rabbitmq
     ports:
-      - "5004:5004"
+      - "5008:5008"

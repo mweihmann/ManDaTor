@@ -1,11 +1,15 @@
 
 from flask import Flask
-import pika, json, psycopg2
+import pika, json, psycopg2, threading
 from datetime import datetime
 from dateutil import parser
-from database.util.db import get_connection
+from util.db import get_connection
+from util.rabbitmq import connect_rabbitmq
+
 
 app = Flask(__name__)
+usage_thread = None
+stop_event = threading.Event()
 
 # check that here is data for every hour
 def ensure_hour_exists(cur, hour):
@@ -31,9 +35,13 @@ def process_message(ch, method, properties, body):
 
     # producer increasing energy elif user needs energy
     if msg_type == "PRODUCER":
-        cur.execute("UPDATE usage_stats SET community_produced = community_produced + %s WHERE hour = %s", (kwh, hour))
+        cur.execute("UPDATE usage_stats SET community_produced = community_produced + %s WHERE hour = %s",
+                    (kwh, hour)
+                    )
     elif msg_type == "USER":
-        cur.execute("SELECT community_produced, community_used FROM usage_stats WHERE hour = %s", (hour,))
+        cur.execute("SELECT community_produced, community_used FROM usage_stats WHERE hour = %s",
+                    (hour,)
+                    )
         result = cur.fetchone()
 
         if result is None:
@@ -45,26 +53,58 @@ def process_message(ch, method, properties, body):
         used = float(result["community_used"])
         available = produced - used
         grid_add = max(0, kwh - available)
-        cur.execute("UPDATE usage_stats SET community_used = community_used + %s, grid_used = grid_used + %s WHERE hour = %s", (kwh, grid_add, hour))
+        cur.execute("UPDATE usage_stats SET community_used = community_used + %s, grid_used = grid_used + %s WHERE hour = %s",
+                    (kwh, grid_add, hour)
+                    )
 
     conn.commit()
     cur.close()
     conn.close()
+
+def listen():
+    """Background thread: Connects to RabbitMQ and consumes messages."""
+    while not stop_event.is_set():
+        try:
+            connection = connect_rabbitmq()
+            channel = connection.channel()
+            channel.queue_declare(queue='energy')
+            channel.basic_consume(queue='energy', on_message_callback=process_message, auto_ack=True)
+            print("Usage Service started. Listening for messages...")
+
+            while not stop_event.is_set():
+                connection.process_data_events(time_limit=1)
+                stop_event.wait(1)
+        except Exception as e:
+            print("[Usage Service] Error connecting or processing:", e)
+            print("[Usage Service] Retrying in 3 seconds...")
+            stop_event.wait(3)
+        finally:
+            try:
+                if connection and not connection.is_closed:
+                    connection.close()
+                    print("[Usage Service] Connection closed.")
+            except Exception as e:
+                print("[Usage Service] Error closing connection:", e)
+
+
 # create background thread which waits for rabbitmq messages
 @app.route('/start')
 def start():
-    import threading
-    def listen():
-        connection = pika.BlockingConnection(pika.ConnectionParameters(host='rabbitmq'))
-        channel = connection.channel()
-        channel.queue_declare(queue='energy')
-        channel.basic_consume(queue='energy', on_message_callback=process_message, auto_ack=True)
-        print("Usage Service started. Listening for messages...")
-        channel.start_consuming()
+    global usage_thread
+    if usage_thread is None or not usage_thread.is_alive():
+        stop_event.clear()
+        usage_thread = threading.Thread(target=listen, daemon=True)
+        usage_thread.start()
+        return "Usage service started.\n"
+    return "Usage service already running.\n"
 
-    thread = threading.Thread(target=listen)
-    thread.start()
-    return "Usage Service started."
+@app.route('/stop')
+def stop_usage():
+    stop_event.set()
+    return "Usage service stopping...\n"
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5003)
+    stop_event.clear()
+    usage_thread = threading.Thread(target=listen, daemon=True)
+    usage_thread.start()
+    app.run(host='0.0.0.0', port=5007)

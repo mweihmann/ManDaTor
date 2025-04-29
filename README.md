@@ -1,6 +1,6 @@
 # ManDaTor Energy
 
-A distributed system for simulating and monitoring energy production and consumption within a smart energy community. Built using Python, Flask, PostgreSQL, RabbitMQ, and Docker.
+A distributed system for simulating and monitoring energy production and consumption within a smart energy community. Built using Python, Flask, PostgreSQL, Spring Boot, JavaFX, RabbitMQ, and Docker.
 
 ---
 
@@ -67,16 +67,49 @@ chmod +x MACOS_START.sh
 
 ---
 
-### Access the Application
+## Service Endpoints
+> All Endpoints start automatically
 
-| Service          | Endpoint                          | Description                        |
-|-------------------|-----------------------------------|------------------------------------|
-| **Producer**      | [http://localhost:5001/start](http://localhost:5001/start) | Starts sending energy production  |
-| **User**          | [http://localhost:5002/start](http://localhost:5002/start) | Starts sending energy usage        |
-| **Usage Service** | [http://localhost:5003/start](http://localhost:5003/start) | Starts listening and processing    |
-| **Percentage API**| [http://localhost:5004/percentage](http://localhost:5004/percentage) | Returns the latest usage metrics   |
+| Service             | Start Endpoint                                 | Stop Endpoint                                  | Description                             |
+|---------------------|------------------------------------------------|------------------------------------------------|-----------------------------------------|
+| **Producer 1**      | [http://localhost:5001/start](http://localhost:5001/start) | [http://localhost:5001/stop](http://localhost:5001/stop) | Starts/stops sending energy production        |
+| **Producer 2**      | [http://localhost:5002/start](http://localhost:5002/start) | [http://localhost:5002/stop](http://localhost:5002/stop) | Starts/stops sending energy production        |
+| **Producer 3**      | [http://localhost:5003/start](http://localhost:5003/start) | [http://localhost:5003/stop](http://localhost:5003/stop) | Starts/stops sending energy production        |
+| **User 1**          | [http://localhost:5004/start](http://localhost:5004/start) | [http://localhost:5004/stop](http://localhost:5004/stop) | Starts/stops sending energy usage             |
+| **User 2**          | [http://localhost:5005/start](http://localhost:5005/start) | [http://localhost:5005/stop](http://localhost:5005/stop) | Starts/stops sending energy usage             |
+| **User 3**          | [http://localhost:5006/start](http://localhost:5006/start) | [http://localhost:5006/stop](http://localhost:5006/stop) | Starts/stops sending energy usage             |
+| **Usage Service**   | [http://localhost:5007/start](http://localhost:5007/start) | [http://localhost:5007/stop](http://localhost:5007/stop) | Starts/stops listening and processing messages|
+| **Percentage API**  | [http://localhost:5008/start](http://localhost:5008/start) | [http://localhost:5008/stop](http://localhost:5008/stop) | Starts/stops periodic percentage updates      |
+| **RabbitMQ UI**     | [http://localhost:15672](http://localhost:15672)         | —                                              | Web interface to monitor messaging      |
 
 ---
+
+## PostgreSQL – Command Reference
+
+1. Find your database container ID using a terminal (also in Docker Desktop seeable)
+
+```bash
+docker ps
+```
+
+2. Look for the container with the image name postgres:alpine and enter the container’s interactive shell
+
+```bash
+docker exec -it <container_id> psql -U disysuser
+```
+> Replace `<container_id>` with your actual running database container ID
+
+| Step | Description                            | Command                                                                 |
+|------|----------------------------------------|-------------------------------------------------------------------------|
+| 1    | Show all databases                     | `\l`                                                                    |
+| 2    | Connect to the project database        | `\c mandator_energy_db`                                                |
+| 3    | List all tables                        | `\dt`                                                                   |
+| 4    | Show table schema for `usage_stats`    | `\d usage_stats`                                                       |
+| 5    | Select all entries from `usage_stats`  | `SELECT * FROM usage_stats;`                                           |
+| 6    | Quit the interface  | `\q`                                           |
+
+---
+
 
 ## Reset the Project (if needed)
 ```bash
@@ -93,7 +126,7 @@ at the **University of Applied Sciences Technikum Vienna**.
 
 ### Contributors
 
-| Name               |
+| Names               |
 |--------------------|
 | Manuel Weihmann    |
 | Daniel Stepanovic  |
@@ -107,4 +140,11 @@ This Docker Compose configuration includes two essential containers for the proj
 The database container in this setup runs a PostgreSQL database configured with a user named **"disysuser"** and a password **"disyspw"**. For the project, you will need to create the necessary databases and tables to store and manage the required data effectively. The connection details are as follows: the hostname is the localhost, the default port is 5432, and you can authenticate using the provided username and password. Ensure that the PostgreSQL container is running before attempting to connect.
 
 ## Queue 
-The queue container in this setup runs a RabbitMQ Management instance, which provides both message queuing functionality and a user-friendly web-based management interface. RabbitMQ facilitates the communication between different components of the project by enabling reliable message passing. To connect to the RabbitMQ instance, you can access the management interface via a web browser by navigating to http://loclahost:15672. By default, you can log in using the username "guest" and password "guest", unless overridden in the Docker Compose configuration. For programmatic access, RabbitMQ client libraries can connect using the host at loclahost:5672. Ensure the container is running and accessible before attempting to connect.
+The queue container in this setup runs a RabbitMQ Management instance, which provides both message queuing functionality and a user-friendly web-based management interface. RabbitMQ facilitates the communication between different components of the project by enabling reliable message passing. To connect to the RabbitMQ instance, you can access the management interface via a web browser by navigating to http://localhost:15672. By default, you can log in using the username "guest" and password "guest", unless overridden in the Docker Compose configuration. For programmatic access, RabbitMQ client libraries can connect using the host at localhost:5672. Ensure the container is running and accessible before attempting to connect.
+
+docker exec -it <container_id> psql -U disysuser - connect to container
+\l - Show all dbs
+\c mandator_energy_db - select db
+\dt - Show all tables
+\d usage_stats - Shows columns and types
+SELECT * FROM usage_stats; 
