@@ -1,26 +1,30 @@
-# Python
+# ===================
+# Python & Flask
+# ===================
 __pycache__/
-*.pyc
-*.pyo
-*.pyd
-*.pyc
+*.py[cod]
 *.p~*
-
-# Flask / Env
 .env
 *.env
 
-# VSCode
+# ===================
+# VSCode & macOS
+# ===================
 .vscode/
+.DS_Store
 
+# ===================
 # Docker
+# ===================
+# docker-compose.override.yml
 # *.log
 # *.pid
 # *.seed
 # *.dbml
-# docker-compose.override.yml
 
-# Pip
+# ===================
+# Pip / Virtualenvs
+# ===================
 pip-log.txt
 pip-delete-this-directory.txt
 *.venv/
@@ -29,18 +33,75 @@ venv/
 ENV/
 env/
 
-# macOS
-.DS_Store
-
-# Pytest
+# ===================
+# Test & Coverage (Python)
+# ===================
 .cache/
 .pytest_cache/
-
-# Coverage reports
-htmlcov/
 coverage.xml
+htmlcov/
 *.cover
 *.py,cover
-.cache
 nosetests.xml
 *.db
+
+# ===================
+# Java / Maven
+# ===================
+/target/
+!/mvn/wrapper/maven-wrapper.jar
+*.log
+
+# Ignore target in specific submodules
+/mandator-api/target/
+/mandator-gui/target/
+
+# ===================
+# Java build folders
+# ===================
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+# ===================
+# IntelliJ IDEA
+# ===================
+.idea/
+*.iws
+*.iml
+*.ipr
+/out/
+shelf/
+workspace.xml
+/httpRequests/
+dataSources/
+dataSources.local.xml
+
+# ===================
+# Eclipse / Spring Tools
+# ===================
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings/
+.springBeans
+.sts4-cache
+
+# ===================
+# NetBeans
+# ===================
+nbproject/private/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+
+# ===================
+# Configuration files (optional, local)
+# ===================
+application-dev.properties
+application-test.properties
+
+# Projektbeschreibung
+HELP.md

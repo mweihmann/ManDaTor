@@ -4,10 +4,10 @@ docker compose down -v --remove-orphans
 echo "Starting Docker containers..."
 docker compose up -d --build
 
-# echo "Opening Producer in IDE..."
-# code ./producer
-
-# echo "Opening User in IDE..."
-# code ./user
-
 echo "All services are up!"
+# echo "Launching Mandator GUI..."
+# sleep 5
+
+# java -jar path/to/mandator-gui/target/mandator-gui.jar &
+
+# echo "GUI is up!"

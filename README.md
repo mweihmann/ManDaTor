@@ -142,9 +142,21 @@ The database container in this setup runs a PostgreSQL database configured with 
 ## Queue 
 The queue container in this setup runs a RabbitMQ Management instance, which provides both message queuing functionality and a user-friendly web-based management interface. RabbitMQ facilitates the communication between different components of the project by enabling reliable message passing. To connect to the RabbitMQ instance, you can access the management interface via a web browser by navigating to http://localhost:15672. By default, you can log in using the username "guest" and password "guest", unless overridden in the Docker Compose configuration. For programmatic access, RabbitMQ client libraries can connect using the host at localhost:5672. Ensure the container is running and accessible before attempting to connect.
 
-docker exec -it <container_id> psql -U disysuser - connect to container
-\l - Show all dbs
-\c mandator_energy_db - select db
-\dt - Show all tables
-\d usage_stats - Shows columns and types
-SELECT * FROM usage_stats; 
+
+
+
+### Reference Documentation
+
+For further reference, please consider the following sections:
+
+* [Official Apache Maven documentation](https://maven.apache.org/guides/index.html)
+* [Spring Boot Maven Plugin Reference Guide](https://docs.spring.io/spring-boot/3.4.5/maven-plugin)
+* [Create an OCI image](https://docs.spring.io/spring-boot/3.4.5/maven-plugin/build-image.html)
+
+### Maven Parent overrides
+
+Due to Maven's design, elements are inherited from the parent POM to the project POM.
+While most of the inheritance is fine, it also inherits unwanted elements like `<license>` and `<developers>` from the
+parent.
+To prevent this, the project POM contains empty overrides for these elements.
+If you manually switch to a different parent and actually want the inheritance, you need to remove those overrides.
