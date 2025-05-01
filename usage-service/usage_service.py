@@ -27,10 +27,12 @@ def process_message(ch, method, properties, body):
     kwh = float(data['kwh'])
     dt = parser.isoparse(data['datetime']) # convert ISO-time string into datetime
     hour = dt.replace(minute=0, second=0, microsecond=0) #round to hours
-
+    
+    #  Open database connection
     conn = get_connection()
     cur = conn.cursor()
 
+    # Make sure that this hour exists in the database
     ensure_hour_exists(cur, hour)
 
     # producer increasing energy elif user needs energy

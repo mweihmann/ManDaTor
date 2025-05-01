@@ -1,6 +1,6 @@
 import os
-from flask import Flask
-import pika
+from flask import Flask # Web server
+import pika # RabbitMQ connection
 import json
 import time
 import random
@@ -12,7 +12,8 @@ app = Flask(__name__)
 stop_event = threading.Event()  # Event to stop the thread
 user_thread = None  # Store reference to the running thread
 
-#delivers simulated energy usage (morning and evening)
+# This function simulates energy usage (kWh)
+# More usage in morning (6–9) and evening (17–21)
 def get_user_kwh():
     """Simulate energy usage based on time of day."""
     hour = datetime.now().hour
@@ -40,7 +41,7 @@ def send_usage():
                     "kwh": get_user_kwh(),
                     "datetime": datetime.now().isoformat(timespec='seconds')
                 }
-                channel.basic_publish(
+                channel.basic_publish(  # send message to RabbitMQ
                     exchange='',
                     routing_key='energy',
                     body=json.dumps(message)
