@@ -12,10 +12,14 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.LocalDate;
+import java.util.List;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import mandator.mandatorgui.dto.EnergyStatsDTO;
+import mandator.mandatorgui.dto.HistoricalEnergyDTO;
 
 
 public class MandatorGuiController {
@@ -43,8 +47,8 @@ public class MandatorGuiController {
         }
         startTimeBox.setItems(hours);
         endTimeBox.setItems(hours);
-        startTimeBox.setValue("14:00");
-        endTimeBox.setValue("14:00");
+        startTimeBox.setValue("");
+        endTimeBox.setValue("");
         startDate.setValue(LocalDate.now().minusDays(1));
         endDate.setValue(LocalDate.now());
     }
@@ -60,21 +64,14 @@ public class MandatorGuiController {
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 //            System.out.println("API-Response for /energy/current: " + response.body()); // test
 
-            JSONObject json = new JSONObject(response.body());
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.registerModule(new JavaTimeModule());
+            mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
-            if (json.has("communityDepleted")) {
-                double community = json.getDouble("communityDepleted");
-                communityPoolLabel.setText(String.format("%.2f%% used", community));
-            } else {
-                communityPoolLabel.setText("missing");
-            }
+            EnergyStatsDTO dto = mapper.readValue(response.body(), EnergyStatsDTO.class);
 
-            if (json.has("gridPortion")) {
-                double grid = json.getDouble("gridPortion");
-                gridPortionLabel.setText(String.format("%.2f%%", grid));
-            } else {
-                gridPortionLabel.setText("missing");
-            }
+            communityPoolLabel.setText(String.format("%.2f%% used", dto.getCommunityDepleted()));
+            gridPortionLabel.setText(String.format("%.2f%%", dto.getGridPortion()));
 
         } catch (Exception e) {
             communityPoolLabel.setText("Error");
@@ -99,26 +96,20 @@ public class MandatorGuiController {
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 //            System.out.println("API-Response for /energy/historical?start..: " + response.body()); // test
 
-            JSONArray array = new JSONArray(response.body());
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.registerModule(new JavaTimeModule());
+            mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+
+            List<HistoricalEnergyDTO> stats = mapper.readValue(response.body(), new TypeReference<>() {});
 
             double produced = 0;
             double used = 0;
             double grid = 0;
 
-            for (int i = 0; i < array.length(); i++) {
-                JSONObject obj = array.getJSONObject(i);
-
-                if (obj.has("communityProduced")) {
-                    produced += obj.getDouble("communityProduced");
-                }
-
-                if (obj.has("communityUsed")) {
-                    used += obj.getDouble("communityUsed");
-                }
-
-                if (obj.has("gridUsed")) {
-                    grid += obj.getDouble("gridUsed");
-                }
+            for (HistoricalEnergyDTO dto : stats) {
+                produced += dto.getCommunityProduced();
+                used += dto.getCommunityUsed();
+                grid += dto.getGridUsed();
             }
 
             producedLabel.setText(String.format("%.3f kWh", produced));
