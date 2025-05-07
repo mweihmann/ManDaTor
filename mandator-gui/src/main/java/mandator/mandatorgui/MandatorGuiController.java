@@ -47,8 +47,8 @@ public class MandatorGuiController {
         }
         startTimeBox.setItems(hours);
         endTimeBox.setItems(hours);
-        startTimeBox.setValue("");
-        endTimeBox.setValue("");
+        startTimeBox.setValue("00:00");
+        endTimeBox.setValue("23:00");
         startDate.setValue(LocalDate.now().minusDays(1));
         endDate.setValue(LocalDate.now());
     }
