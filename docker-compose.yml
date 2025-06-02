@@ -1,0 +1,14 @@
+services:
+  database:
+    image: postgres:alpine
+    ports:
+      - '5432:5432'
+    environment:
+      - POSTGRES_USER=disysuser
+      - POSTGRES_PASSWORD=disyspw
+  
+  rabbitmq:
+    image: rabbitmq:management-alpine
+    ports:
+      - '5672:5672'
+      - '15672:15672'
