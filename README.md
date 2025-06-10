@@ -16,8 +16,9 @@ Step 1)
 docker compose up 
 
 Step 2)
-Starte CommunityEnergyProducer.java
-Starte CommunityEnergyUser.java
+- Starte CommunityEnergyProducer.java
+- Starte CommunityEnergyUser.java
+- Starte GridEnergyProducer.java
 
 Step 3)
 http://localhost:15672
