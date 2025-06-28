@@ -6,6 +6,7 @@ services:
     environment:
       - POSTGRES_USER=disysuser
       - POSTGRES_PASSWORD=disyspw
+      - TZ=Europe/Vienna                     # Set timezone for container
     volumes:
       - ./database:/docker-entrypoint-initdb.d
   
@@ -16,13 +17,17 @@ services:
       - '15672:15672'
 
   # Use multiple producers
-  # SOLAR_MULTIPLIER is used to simulate different solar production rates
+  # SOLAR_MULTIPLIER is used to simulate different solar production/usage rates
   # environment port is for flask to know what it should use for each service
   producer1:
     build: ./producer
+    env_file:
+      - .env
     environment:
       - PORT=5001
-      - SOLAR_MULTIPLIER=1.1
+      - TZ=Europe/Vienna
+      - WEATHER_CITY=Vienna       # Container specific city
+      - SOLAR_MULTIPLIER=1.0      # Optional - increase for testing
     ports:
       - "5001:5001"
     depends_on:
@@ -32,9 +37,13 @@ services:
 
   producer2:
     build: ./producer
+    env_file:
+      - .env
     environment:
       - PORT=5002
-      - SOLAR_MULTIPLIER=1.2
+      - TZ=Europe/Vienna
+      - WEATHER_CITY=Vienna       # Container specific city
+      - SOLAR_MULTIPLIER=1.0      # Optional - increase for testing
     ports:
       - "5002:5002"
     depends_on:
@@ -44,9 +53,13 @@ services:
 
   producer3:
     build: ./producer
+    env_file:
+      - .env
     environment:
       - PORT=5003
-      - SOLAR_MULTIPLIER=1.0 
+      - TZ=Europe/Vienna
+      - WEATHER_CITY=Vienna       # Container specific city
+      - SOLAR_MULTIPLIER=1.0      # Optional - increase for testing
     ports:
       - "5003:5003"
     depends_on:
@@ -59,7 +72,7 @@ services:
     build: ./user
     environment:
       - PORT=5004
-      - SOLAR_MULTIPLIER=1.1 
+      - SOLAR_MULTIPLIER=1.0      # Optional - increase/reduce for testing
     ports:
       - "5004:5004"
     depends_on:
@@ -71,7 +84,7 @@ services:
     build: ./user
     environment:
       - PORT=5005
-      - SOLAR_MULTIPLIER=1.3 
+      - SOLAR_MULTIPLIER=1.0      # Optional - increase/reduce for testing
     ports:
       - "5005:5005"
     depends_on:
@@ -83,7 +96,7 @@ services:
     build: ./user
     environment:
       - PORT=5006
-      - SOLAR_MULTIPLIER=1.0 
+      - SOLAR_MULTIPLIER=1.0      # Optional - increase/reduce for testing
     ports:
       - "5006:5006"
     depends_on:

@@ -7,6 +7,7 @@ import random
 from datetime import datetime
 import threading
 from util.rabbitmq import connect_rabbitmq
+import pytz
 
 app = Flask(__name__)
 stop_event = threading.Event()  # Event to stop the thread
@@ -20,7 +21,7 @@ def get_user_kwh():
     base = random.uniform(0.001, 0.003)
     base *= float(os.environ.get("SOLAR_MULTIPLIER", 1.0)) # default multiplier from yml file env variable
     if 6 <= hour <= 9 or 17 <= hour <= 21:
-        base *= 2  # Peak usage times: morning and evening
+        base *= 2  # Higher energy usage during typical peak hours
     return round(base, 6)
 
 # sends every 5 seconds a USER message
@@ -35,11 +36,12 @@ def send_usage():
             print("[User] Started.")
             
             while not stop_event.is_set():  # could also be while true instead of stop event
+                vienna_tz = pytz.timezone("Europe/Vienna")
                 message = {
                     "type": "USER",
                     "association": "COMMUNITY",
                     "kwh": get_user_kwh(),
-                    "datetime": datetime.now().isoformat(timespec='seconds')
+                    "datetime": datetime.now(vienna_tz).isoformat(timespec='seconds')
                 }
                 channel.basic_publish(  # send message to RabbitMQ
                     exchange='',

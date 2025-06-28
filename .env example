@@ -3,3 +3,5 @@ DB_NAME=mandator_energy_db
 DB_USER=disysuser
 DB_PASSWORD=disyspw
 DB_PORT=5432
+
+WEATHER_API_KEY=cafdf43fa4944f6c9ac114249252806

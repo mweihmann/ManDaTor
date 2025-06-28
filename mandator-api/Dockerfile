@@ -13,4 +13,4 @@ COPY src ./src
 
 RUN ./mvnw package -DskipTests
 
-CMD ["java", "-jar", "target/mandator-api-0.0.1-SNAPSHOT.jar"]
+CMD ["java", "-Duser.timezone=Europe/Vienna", "-jar", "target/mandator-api-0.0.1-SNAPSHOT.jar"]
