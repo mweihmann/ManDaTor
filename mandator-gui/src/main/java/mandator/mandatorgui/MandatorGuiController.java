@@ -83,8 +83,32 @@ public class MandatorGuiController {
     @FXML
     public void handleShowData() {
         try {
-            String start = startDate.getValue() + "T" + startTimeBox.getValue();
-            String end = endDate.getValue() + "T" + endTimeBox.getValue();
+            LocalDate startD = startDate.getValue();
+            LocalDate endD = endDate.getValue();
+            if (startD == null || endD == null) {
+                producedLabel.setText("Please select dates");
+                usedLabel.setText("Please select dates");
+                gridUsedLabel.setText("Please select dates");
+                return;
+            }
+
+            if (startD.isAfter(endD)) {
+                producedLabel.setText("Start after End");
+                usedLabel.setText("Start after End");
+                gridUsedLabel.setText("Start after End");
+                return;
+            }
+
+            LocalDate today = LocalDate.now();
+            if (startD.isAfter(today) || endD.isAfter(today)) {
+                producedLabel.setText("Date in future");
+                usedLabel.setText("Date in future");
+                gridUsedLabel.setText("Date in future");
+                return;
+            }
+
+            String start = startD + "T" + startTimeBox.getValue();
+            String end = endD + "T" + endTimeBox.getValue();
 
             String url = String.format("http://localhost:8081/energy/historical?start=%s&end=%s", start, end);
 
@@ -94,7 +118,6 @@ public class MandatorGuiController {
                     .build();
 
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-//            System.out.println("API-Response for /energy/historical?start..: " + response.body()); // test
 
             ObjectMapper mapper = new ObjectMapper();
             mapper.registerModule(new JavaTimeModule());
@@ -122,7 +145,8 @@ public class MandatorGuiController {
             gridUsedLabel.setText("Error");
             e.printStackTrace();
         }
-
     }
+
+
 
 }
