@@ -14,11 +14,19 @@ import java.util.List;
  * REST controller providing energy statistics endpoints.
  */
 @RestController
-@RequestMapping("/energy")
+@RequestMapping("/api/energy")
 public class EnergyController {
 
-    @Autowired
-    private EnergyService energyService;
+    private final EnergyService energyService;
+
+    public EnergyController(EnergyService energyService) {
+        this.energyService = energyService;
+    }
+
+    @GetMapping("/status")
+    public String getStatus() {
+        return "Energy API is running";
+    }
 
     @GetMapping("/current")
     public EnergyStatsDTO getCurrent() {

@@ -3,15 +3,12 @@ package mandator.mandatorapi.entity;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
-/**
- * Entity mapping to the usage_stats table.
- */
 @Entity
 @Table(name = "usage_stats")
 public class UsageStats {
 
     @Id
-    @Column(name = "hour", nullable = false)
+    @Column(nullable = false)
     private LocalDateTime hour;
 
     @Column(name = "community_produced", nullable = false)
@@ -23,32 +20,34 @@ public class UsageStats {
     @Column(name = "grid_used", nullable = false)
     private double gridUsed;
 
+    // --- Getters and setters ---
+
     public LocalDateTime getHour() {
         return hour;
-    }
-
-    public double getCommunityProduced() {
-        return communityProduced;
-    }
-
-    public double getCommunityUsed() {
-        return communityUsed;
-    }
-
-    public double getGridUsed() {
-        return gridUsed;
     }
 
     public void setHour(LocalDateTime hour) {
         this.hour = hour;
     }
 
+    public double getCommunityProduced() {
+        return communityProduced;
+    }
+
     public void setCommunityProduced(double communityProduced) {
         this.communityProduced = communityProduced;
     }
 
+    public double getCommunityUsed() {
+        return communityUsed;
+    }
+
     public void setCommunityUsed(double communityUsed) {
         this.communityUsed = communityUsed;
+    }
+
+    public double getGridUsed() {
+        return gridUsed;
     }
 
     public void setGridUsed(double gridUsed) {

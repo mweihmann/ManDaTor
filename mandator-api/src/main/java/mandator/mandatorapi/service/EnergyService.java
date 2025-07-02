@@ -4,7 +4,6 @@ import mandator.mandatorapi.dto.EnergyStatsDTO;
 import mandator.mandatorapi.dto.HistoricalEnergyDTO;
 import mandator.mandatorapi.entity.UsageStats;
 import mandator.mandatorapi.repository.UsageStatsRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -17,11 +16,16 @@ import java.util.stream.Collectors;
 @Service
 public class EnergyService {
 
-    @Autowired
-    private UsageStatsRepository usageStatsRepository;
+    private final UsageStatsRepository usageStatsRepository;
+
+    public EnergyService(UsageStatsRepository usageStatsRepository) {
+        this.usageStatsRepository = usageStatsRepository;
+    }
 
     public EnergyStatsDTO getCurrentEnergyStats() {
         LocalDateTime currentHour = LocalDateTime.now().withMinute(0).withSecond(0).withNano(0);
+
+        // Fetch the usage stats from the database for the current hour
         UsageStats stats = usageStatsRepository.findByHour(currentHour);
 
         if (stats == null) {
@@ -40,7 +44,10 @@ public class EnergyService {
     }
 
     public List<HistoricalEnergyDTO> getHistoricalEnergy(LocalDateTime start, LocalDateTime end) {
+
+        // Fetch the usage stats from the database for the specified time range
         List<UsageStats> statsList = usageStatsRepository.findByHourBetween(start, end);
+
         return statsList.stream()
                 .map(stats -> new HistoricalEnergyDTO(
                         stats.getHour(),

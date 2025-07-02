@@ -6,10 +6,10 @@ import java.time.LocalDateTime;
  * DTO representing historical energy data.
  */
 public class HistoricalEnergyDTO {
-    private LocalDateTime hour;
-    private double communityProduced;
-    private double communityUsed;
-    private double gridUsed;
+    private final LocalDateTime hour;
+    private final double communityProduced;
+    private final double communityUsed;
+    private final double gridUsed;
 
     public HistoricalEnergyDTO(LocalDateTime hour, double communityProduced, double communityUsed, double gridUsed) {
         this.hour = hour;

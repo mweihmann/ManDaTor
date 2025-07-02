@@ -6,9 +6,9 @@ import java.time.LocalDateTime;
  * DTO representing the percentage stats for the current hour.
  */
 public class EnergyStatsDTO {
-    private LocalDateTime hour;
-    private double communityDepleted;
-    private double gridPortion;
+    private final LocalDateTime hour;
+    private final double communityDepleted;
+    private final double gridPortion;
 
     public EnergyStatsDTO(LocalDateTime hour, double communityDepleted, double gridPortion) {
         this.hour = hour;
