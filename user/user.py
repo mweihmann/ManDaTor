@@ -6,36 +6,33 @@ import time
 import random
 from datetime import datetime
 import threading
-from util.rabbitmq import connect_rabbitmq
+# from util.rabbitmq import connect_rabbitmq
 import pytz
 
 app = Flask(__name__)
-stop_event = threading.Event()  # Event to stop the thread
-user_thread = None  # Store reference to the running thread
+stop_event = threading.Event() 
+user_thread = None 
 
-# This function simulates energy usage (kWh)
-# More usage in morning (6–9) and evening (17–21)
 def get_user_kwh():
     """Simulate energy usage based on time of day."""
     hour = datetime.now().hour
     base = random.uniform(0.001, 0.003)
-    base *= float(os.environ.get("SOLAR_MULTIPLIER", 1.0)) # default multiplier from yml file env variable
+    base *= float(os.environ.get("SOLAR_MULTIPLIER", 1.0)) 
     if 6 <= hour <= 9 or 17 <= hour <= 21:
-        base *= 2  # Higher energy usage during typical peak hours
+        base *= 2  
     return round(base, 6)
 
-# sends every 5 seconds a USER message
 def send_usage():
     """Send USER messages to RabbitMQ every 5 seconds."""
     while not stop_event.is_set():
         try:
-            connection = connect_rabbitmq() # connect to RabbitMQ
+            connection = connect_rabbitmq() 
             channel = connection.channel()
             channel.queue_declare(queue='energy')
 
             print("[User] Started.")
             
-            while not stop_event.is_set():  # could also be while true instead of stop event
+            while not stop_event.is_set():
                 vienna_tz = pytz.timezone("Europe/Vienna")
                 message = {
                     "type": "USER",
@@ -43,13 +40,13 @@ def send_usage():
                     "kwh": get_user_kwh(),
                     "datetime": datetime.now(vienna_tz).isoformat(timespec='seconds')
                 }
-                channel.basic_publish(  # send message to RabbitMQ
+                channel.basic_publish(
                     exchange='',
                     routing_key='energy',
                     body=json.dumps(message)
                 )
                 print("[User] Sent:", message)
-                stop_event.wait(5) # wait for 5 seconds or until the event is set
+                stop_event.wait(5)
         except Exception as e:
             print("[User] Error:", e)
             print("[User] Attempting reconnect in 5s...")
@@ -59,6 +56,20 @@ def send_usage():
                 connection.close()
             except:
                 pass
+
+
+def connect_rabbitmq(retries=10, delay=3, host='rabbitmq'):
+    """
+    Tries to connect to RabbitMQ with retries.
+    """
+    for i in range(retries):
+        try:
+            return pika.BlockingConnection(pika.ConnectionParameters(host=host))
+        except pika.exceptions.AMQPConnectionError:
+            print(f"[RabbitMQ Retry {i+1}/{retries}] Not ready. Retrying in {delay}s...")
+            time.sleep(delay)
+    raise Exception("Could not connect to RabbitMQ after multiple attempts.")
+
 
 @app.route('/start')
 def start_user():
