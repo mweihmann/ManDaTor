@@ -8,7 +8,11 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox maxHeight="285.0" maxWidth="325.0" minHeight="285.0" minWidth="325.0" prefHeight="285.0" prefWidth="325.0" spacing="10.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mandator.mandatorgui.MandatorGuiController">
+<VBox maxHeight="285.0" maxWidth="325.0" minHeight="285.0" minWidth="325.0" prefHeight="285.0" prefWidth="325.0" spacing="10.0"
+      xmlns="http://javafx.com/javafx/23.0.1"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="mandator.mandatorgui.MandatorGuiController">
+      <!-- Verbindet mit der Controller-Klasse in Java -->
 
   <HBox spacing="10">
     <Label text="Community Pool:" />
@@ -56,9 +60,11 @@
     <Label text="Grid used:" />
     <Label fx:id="gridUsedLabel" text="..." />
   </HBox>
+
    <opaqueInsets>
       <Insets />
    </opaqueInsets>
+
    <padding>
       <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
    </padding>
