@@ -62,7 +62,7 @@ public class MandatorGuiController {
                     .build();
 
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-//            System.out.println("API-Response for /energy/current: " + response.body()); // test
+            System.out.println("API-Response for /energy/current: " + response.body()); // test
 
             ObjectMapper mapper = new ObjectMapper();
             mapper.registerModule(new JavaTimeModule());
@@ -118,6 +118,7 @@ public class MandatorGuiController {
                     .build();
 
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            System.out.println("API-Response for /energy/historical?start..: " + response.body()); // test
 
             ObjectMapper mapper = new ObjectMapper();
             mapper.registerModule(new JavaTimeModule());
