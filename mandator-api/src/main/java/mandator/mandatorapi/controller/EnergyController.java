@@ -3,7 +3,6 @@ package mandator.mandatorapi.controller;
 import mandator.mandatorapi.dto.EnergyStatsDTO;
 import mandator.mandatorapi.dto.HistoricalEnergyDTO;
 import mandator.mandatorapi.service.EnergyService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 

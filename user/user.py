@@ -6,7 +6,6 @@ import time
 import random
 from datetime import datetime
 import threading
-# from util.rabbitmq import connect_rabbitmq
 import pytz
 
 app = Flask(__name__)

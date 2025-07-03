@@ -24,7 +24,7 @@ services:
       - SPRING_DATASOURCE_USERNAME=mandator_user
       - SPRING_DATASOURCE_PASSWORD=mandator_pass
   
-  producer:
+  producer1:
     build: ./producer
     env_file:
       - .env
@@ -38,14 +38,62 @@ services:
     depends_on:
       - rabbitmq
 
+  producer2:
+    build: ./producer
+    env_file:
+      - .env
+    environment:
+      - PORT=5002
+      - TZ=Europe/Vienna
+      - WEATHER_CITY=Vienna
+      - SOLAR_MULTIPLIER=1.0
+    ports:
+      - "5002:5002"
+    depends_on:
+      - rabbitmq
+
+  producer3:
+    build: ./producer
+    env_file:
+      - .env
+    environment:
+      - PORT=5003
+      - TZ=Europe/Vienna
+      - WEATHER_CITY=Vienna
+      - SOLAR_MULTIPLIER=1.0
+    ports:
+      - "5003:5003"
+    depends_on:
+      - rabbitmq
+
   # Use multiple users
-  user:
+  user1:
     build: ./user
     environment:
       - PORT=5004
       - SOLAR_MULTIPLIER=1.0
     ports:
       - "5004:5004"
+    depends_on:
+      - rabbitmq
+
+  user2:
+    build: ./user
+    environment:
+      - PORT=5005
+      - SOLAR_MULTIPLIER=1.0
+    ports:
+      - "5005:5005"
+    depends_on:
+      - rabbitmq
+
+  user3:
+    build: ./user
+    environment:
+      - PORT=5005
+      - SOLAR_MULTIPLIER=1.0
+    ports:
+      - "5005:5005"
     depends_on:
       - rabbitmq
 

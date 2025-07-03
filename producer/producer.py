@@ -1,12 +1,11 @@
-from flask import Flask # Web server
-import pika # RabbitMQ connection
+from flask import Flask
+import pika
 import json
 import time
 import random
 from datetime import datetime
 import threading
 import os
-# from util.rabbitmq import connect_rabbitmq # Helper function to connect to RabbitMQ
 import requests
 import pytz
 
