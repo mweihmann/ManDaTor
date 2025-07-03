@@ -12,7 +12,6 @@ app = Flask(__name__)
 stop_event = threading.Event() 
 user_thread = None 
 
-
 def get_user_kwh():
     """Simulate energy usage based on time of day."""
     hour = datetime.now().hour
@@ -33,12 +32,11 @@ def send_usage():
             print("[User] Started.")
             
             while not stop_event.is_set():
-                vienna_tz = pytz.timezone("Europe/Vienna")
                 message = {
                     "type": "USER",
                     "association": "COMMUNITY",
                     "kwh": get_user_kwh(),
-                    "datetime": datetime.now(vienna_tz).isoformat(timespec='seconds')
+                    "datetime": datetime.now().isoformat(timespec='seconds')
                 }
                 channel.basic_publish(
                     exchange='',

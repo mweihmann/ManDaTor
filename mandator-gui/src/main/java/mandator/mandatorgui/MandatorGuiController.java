@@ -110,26 +110,8 @@ public class MandatorGuiController {
                 return;
             }
 
-            DateTimeFormatter formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
-
-            ZoneId systemZone = ZoneId.systemDefault();
-
-            LocalTime startTime = LocalTime.parse(startTimeBox.getValue());
-            LocalTime endTime = LocalTime.parse(endTimeBox.getValue());
-
-            ZonedDateTime startLocal = ZonedDateTime.of(startD, startTime, systemZone);
-            ZonedDateTime endLocal = ZonedDateTime.of(endD, endTime, systemZone);
-
-            // Convert to UTC
-            ZonedDateTime startUtc = startLocal.withZoneSameInstant(ZoneId.of("UTC"));
-            ZonedDateTime endUtc = endLocal.withZoneSameInstant(ZoneId.of("UTC"));
-
-            String start = startUtc.format(formatter);
-            String end = endUtc.format(formatter);
-
-
-            System.out.println(start);
-            System.out.println(end);
+            String start = startD + "T" + startTimeBox.getValue();
+            String end = endD + "T" + endTimeBox.getValue();
 
             String url = String.format("http://localhost:8080/energy/historical?start=%s&end=%s", start, end);
 

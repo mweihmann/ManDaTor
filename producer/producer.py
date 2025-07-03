@@ -7,7 +7,6 @@ from datetime import datetime
 import threading
 import os
 import requests
-import pytz
 
 
 app = Flask(__name__)
@@ -85,12 +84,11 @@ def send_energy():
             print("[Producer] Started.")
             while not stop_event.is_set():
 
-                vienna_tz = pytz.timezone("Europe/Vienna")
                 message = {
                     "type": "PRODUCER",
                     "association": "COMMUNITY",
                     "kwh": get_solar_kwh(),
-                    "datetime": datetime.now(vienna_tz).isoformat(timespec='seconds')
+                    "datetime": datetime.now().isoformat(timespec='seconds')
                 }
                 channel.basic_publish(
                     exchange='',
