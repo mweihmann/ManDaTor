@@ -90,10 +90,10 @@ services:
   user3:
     build: ./user
     environment:
-      - PORT=5005
+      - PORT=5006
       - SOLAR_MULTIPLIER=1.0
     ports:
-      - "5005:5005"
+      - "5006:5006"
     depends_on:
       - rabbitmq
 
