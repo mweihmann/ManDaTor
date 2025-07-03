@@ -20,7 +20,7 @@ services:
     depends_on:
       - database
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/mandator_energy_db
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://database:5432/mandator_energy_db
       - SPRING_DATASOURCE_USERNAME=mandator_user
       - SPRING_DATASOURCE_PASSWORD=mandator_pass
   
