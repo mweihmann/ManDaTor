@@ -11,7 +11,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.time.LocalDate;
+import java.time.*;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,6 +20,9 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import mandator.mandatorgui.dto.EnergyStatsDTO;
 import mandator.mandatorgui.dto.HistoricalEnergyDTO;
+
+
+import java.time.format.DateTimeFormatter;
 
 
 public class MandatorGuiController {
@@ -107,8 +110,26 @@ public class MandatorGuiController {
                 return;
             }
 
-            String start = startD + "T" + startTimeBox.getValue();
-            String end = endD + "T" + endTimeBox.getValue();
+            DateTimeFormatter formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
+
+            ZoneId systemZone = ZoneId.systemDefault();
+
+            LocalTime startTime = LocalTime.parse(startTimeBox.getValue());
+            LocalTime endTime = LocalTime.parse(endTimeBox.getValue());
+
+            ZonedDateTime startLocal = ZonedDateTime.of(startD, startTime, systemZone);
+            ZonedDateTime endLocal = ZonedDateTime.of(endD, endTime, systemZone);
+
+            // Convert to UTC
+            ZonedDateTime startUtc = startLocal.withZoneSameInstant(ZoneId.of("UTC"));
+            ZonedDateTime endUtc = endLocal.withZoneSameInstant(ZoneId.of("UTC"));
+
+            String start = startUtc.format(formatter);
+            String end = endUtc.format(formatter);
+
+
+            System.out.println(start);
+            System.out.println(end);
 
             String url = String.format("http://localhost:8080/energy/historical?start=%s&end=%s", start, end);
 
