@@ -32,6 +32,7 @@ pip-delete-this-directory.txt
 venv/
 ENV/
 env/
+pyvenv.cfg
 
 # ===================
 # Test & Coverage (Python)

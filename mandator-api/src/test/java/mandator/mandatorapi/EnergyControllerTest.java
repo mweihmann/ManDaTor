@@ -23,11 +23,11 @@ class EnergyControllerTest {
     private MockMvc mockMvc;
 
     @MockitoBean
-    private EnergyService energyService; // ✅ This is now injected into the controller
+    private EnergyService energyService;
 
     @Test
     void testGetStatus() throws Exception {
-        mockMvc.perform(get("/api/energy/status"))
+        mockMvc.perform(get("/energy/status"))
                 .andExpect(status().isOk())
                 .andExpect(result -> {
                     String content = result.getResponse().getContentAsString();
@@ -45,7 +45,7 @@ class EnergyControllerTest {
         when(energyService.getCurrentEnergyStats()).thenReturn(dto);
 
         // Act + Assert
-        mockMvc.perform(get("/api/energy/current"))
+        mockMvc.perform(get("/energy/current"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.hour").value("2025-01-10T14:00:00"))
                 .andExpect(jsonPath("$.communityDepleted").value(75.0))

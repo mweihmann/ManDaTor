@@ -1,118 +1,65 @@
 services:
   database:
-    image: postgres:alpine
-    ports:
-      - '5432:5432'
+    image: postgres:16
+    container_name: mandator_energy_db
+    restart: unless-stopped
     environment:
-      - POSTGRES_USER=disysuser
-      - POSTGRES_PASSWORD=disyspw
-      - TZ=Europe/Vienna                     # Set timezone for container
+      POSTGRES_DB: mandator_energy_db
+      POSTGRES_USER: mandator_user
+      POSTGRES_PASSWORD: mandator_pass
     volumes:
-      - ./database:/docker-entrypoint-initdb.d
-  
-  rabbitmq:
-    image: rabbitmq:management-alpine
+      - pgdata:/var/lib/postgresql/data
     ports:
-      - '5672:5672'
-      - '15672:15672'
+      - "5432:5432"
 
-  # Use multiple producers
-  # SOLAR_MULTIPLIER is used to simulate different solar production/usage rates
-  # environment port is for flask to know what it should use for each service
-  producer1:
+  mandator-api:
+    build:
+      context: ./mandator-api
+    ports:
+      - "8080:8080"
+    depends_on:
+      - database
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/mandator_energy_db
+      - SPRING_DATASOURCE_USERNAME=mandator_user
+      - SPRING_DATASOURCE_PASSWORD=mandator_pass
+  
+  producer:
     build: ./producer
     env_file:
       - .env
     environment:
       - PORT=5001
       - TZ=Europe/Vienna
-      - WEATHER_CITY=Vienna       # Container specific city
-      - SOLAR_MULTIPLIER=1.0      # Optional - increase for testing
+      - WEATHER_CITY=Vienna
+      - SOLAR_MULTIPLIER=1.0
     ports:
       - "5001:5001"
     depends_on:
       - rabbitmq
-    volumes:
-      - ./util:/app/util  
-
-  producer2:
-    build: ./producer
-    env_file:
-      - .env
-    environment:
-      - PORT=5002
-      - TZ=Europe/Vienna
-      - WEATHER_CITY=Vienna       # Container specific city
-      - SOLAR_MULTIPLIER=1.0      # Optional - increase for testing
-    ports:
-      - "5002:5002"
-    depends_on:
-      - rabbitmq
-    volumes:
-      - ./util:/app/util      
-
-  producer3:
-    build: ./producer
-    env_file:
-      - .env
-    environment:
-      - PORT=5003
-      - TZ=Europe/Vienna
-      - WEATHER_CITY=Vienna       # Container specific city
-      - SOLAR_MULTIPLIER=1.0      # Optional - increase for testing
-    ports:
-      - "5003:5003"
-    depends_on:
-      - rabbitmq
-    volumes:
-      - ./util:/app/util        
 
   # Use multiple users
-  user1:
+  user:
     build: ./user
     environment:
       - PORT=5004
-      - SOLAR_MULTIPLIER=1.0      # Optional - increase/reduce for testing
+      - SOLAR_MULTIPLIER=1.0
     ports:
       - "5004:5004"
     depends_on:
       - rabbitmq
-    volumes:
-      - ./util:/app/util
-
-  user2:
-    build: ./user
-    environment:
-      - PORT=5005
-      - SOLAR_MULTIPLIER=1.0      # Optional - increase/reduce for testing
-    ports:
-      - "5005:5005"
-    depends_on:
-      - rabbitmq
-    volumes:
-      - ./util:/app/util     
-
-  user3:
-    build: ./user
-    environment:
-      - PORT=5006
-      - SOLAR_MULTIPLIER=1.0      # Optional - increase/reduce for testing
-    ports:
-      - "5006:5006"
-    depends_on:
-      - rabbitmq
-    volumes:
-      - ./util:/app/util    
-
 
   usage-service:
     build:
       context: ./usage-service
       dockerfile: Dockerfile
-    env_file:
-      - .env  
-    volumes:
-      - ./util:/app/util
+    environment:
+      - PORT=5004
+      - SOLAR_MULTIPLIER=1.0
+      - DB_NAME=mandator_energy_db
+      - DB_USER=mandator_user
+      - DB_PASSWORD=mandator_pass
+      - DB_HOST=database
     depends_on:
       - database
       - rabbitmq
@@ -123,24 +70,22 @@ services:
     build:
       context: ./percentage-service
       dockerfile: Dockerfile
-    env_file:
-      - .env  
-    volumes:
-      - ./util:/app/util
+    environment:
+    - DB_NAME=mandator_energy_db
+    - DB_USER=mandator_user
+    - DB_PASSWORD=mandator_pass
+    - DB_HOST=database
     depends_on:
       - database
       - rabbitmq
     ports:
       - "5008:5008"
 
-  mandator-api:
-    build:
-      context: ./mandator-api
+  rabbitmq:
+    image: rabbitmq:management-alpine
     ports:
-      - "8081:8080" #8081 is the port on the host machine, 8080 is the port in the container
-    depends_on:
-      - database
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://database:5432/mandator_energy_db
-      - SPRING_DATASOURCE_USERNAME=disysuser
-      - SPRING_DATASOURCE_PASSWORD=disyspw
+      - "5672:5672"
+      - "15672:15672"
+
+volumes:
+  pgdata:

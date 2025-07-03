@@ -7,14 +7,15 @@ import jakarta.persistence.Table;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "usage_stats_percentage")
 public class UsageStatsPercentage {
+
     @Id
-    @ColumnDefault("CURRENT_TIMESTAMP")
-    @Column(name = "hour", nullable = false)
-    private Instant id;
+    @Column(nullable = false)
+    private LocalDateTime hour;
 
     @Column(name = "community_depleted", nullable = false)
     private Double communityDepleted;
@@ -22,13 +23,11 @@ public class UsageStatsPercentage {
     @Column(name = "grid_portion", nullable = false)
     private Double gridPortion;
 
-    public Instant getId() {
-        return id;
+    public LocalDateTime getHour() {
+        return hour;
     }
 
-    public void setId(Instant id) {
-        this.id = id;
-    }
+    public void setHour(LocalDateTime hour) {}
 
     public Double getCommunityDepleted() {
         return communityDepleted;

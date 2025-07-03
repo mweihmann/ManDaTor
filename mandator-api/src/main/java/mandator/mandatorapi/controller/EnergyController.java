@@ -14,7 +14,7 @@ import java.util.List;
  * REST controller providing energy statistics endpoints.
  */
 @RestController
-@RequestMapping("/api/energy")
+@RequestMapping("/energy")
 public class EnergyController {
 
     private final EnergyService energyService;

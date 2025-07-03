@@ -57,7 +57,7 @@ public class MandatorGuiController {
     public void handleRefresh() {
         try {
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("http://localhost:8081/energy/current"))
+                    .uri(URI.create("http://localhost:8080/energy/current"))
                     .GET()
                     .build();
 
@@ -110,7 +110,7 @@ public class MandatorGuiController {
             String start = startD + "T" + startTimeBox.getValue();
             String end = endD + "T" + endTimeBox.getValue();
 
-            String url = String.format("http://localhost:8081/energy/historical?start=%s&end=%s", start, end);
+            String url = String.format("http://localhost:8080/energy/historical?start=%s&end=%s", start, end);
 
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(url))

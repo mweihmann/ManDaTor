@@ -79,7 +79,7 @@ def send_energy():
     """
     while not stop_event.is_set():
         try:            
-            connection = connect_rabbitmq()
+            connection = connect_rabbitmq(host="rabbitmq")
             channel = connection.channel()
             channel.queue_declare(queue='energy')
 

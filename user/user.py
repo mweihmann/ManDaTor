@@ -13,6 +13,7 @@ app = Flask(__name__)
 stop_event = threading.Event() 
 user_thread = None 
 
+
 def get_user_kwh():
     """Simulate energy usage based on time of day."""
     hour = datetime.now().hour

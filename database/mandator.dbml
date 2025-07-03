@@ -1,6 +1,0 @@
-Table usage_stats {
-  hour timestamp [pk, note: 'Stundenbasierter Zeitstempel (z. B. 2025-01-10 14:00:00)']
-  community_produced numeric [not null, default: 0, note: 'Stromproduktion der Community (kWh)']
-  community_used numeric [not null, default: 0, note: 'Stromverbrauch der Community (kWh)']
-  grid_used numeric [not null, default: 0, note: 'Strom aus dem Netz (kWh)']
-}
