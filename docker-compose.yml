@@ -68,7 +68,7 @@ services:
     build: ./user
     environment:
       - PORT=5004
-      - SOLAR_MULTIPLIER=1
+      - SOLAR_MULTIPLIER=1.0
     ports:
       - "5004:5004"
     depends_on:
@@ -78,7 +78,7 @@ services:
     build: ./user
     environment:
       - PORT=5005
-      - SOLAR_MULTIPLIER=3
+      - SOLAR_MULTIPLIER=1.0
     ports:
       - "5005:5005"
     depends_on:
@@ -88,7 +88,7 @@ services:
     build: ./user
     environment:
       - PORT=5006
-      - SOLAR_MULTIPLIER=3
+      - SOLAR_MULTIPLIER=1.0
     ports:
       - "5006:5006"
     depends_on:
